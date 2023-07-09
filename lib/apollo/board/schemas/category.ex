@@ -4,6 +4,7 @@ defmodule Apollo.Board.Category do
 
   schema "categories" do
     field :name, :string
+    field :visible, :boolean, default: true
     field :ordering, :integer
 
     timestamps()
@@ -12,7 +13,7 @@ defmodule Apollo.Board.Category do
   @doc false
   def changeset(category, attrs) do
     category
-    |> cast(attrs, [:name, :ordering])
-    |> validate_required([:name, :ordering])
+    |> cast(attrs, ~w(name visible ordering)a)
+    |> validate_required(~w(name visible ordering)a)
   end
 end

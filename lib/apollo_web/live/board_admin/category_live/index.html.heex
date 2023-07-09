@@ -1,7 +1,7 @@
 <.header>
   Listing Categories
   <:actions>
-    <.link patch={~p"/categories/new"}>
+    <.link patch={~p"/board_admin/categories/new"}>
       <.button>New Category</.button>
     </.link>
   </:actions>
@@ -10,15 +10,16 @@
 <.table
   id="categories"
   rows={@streams.categories}
-  row_click={fn {_id, category} -> JS.navigate(~p"/categories/#{category}") end}
+  row_click={fn {_id, category} -> JS.navigate(~p"/board_admin/categories/#{category}") end}
 >
   <:col :let={{_id, category}} label="Name"><%= category.name %></:col>
+  <:col :let={{_id, category}} label="Visible"><%= category.visible %></:col>
   <:col :let={{_id, category}} label="Ordering"><%= category.ordering %></:col>
   <:action :let={{_id, category}}>
     <div class="sr-only">
-      <.link navigate={~p"/categories/#{category}"}>Show</.link>
+      <.link navigate={~p"/board_admin/categories/#{category}"}>Show</.link>
     </div>
-    <.link patch={~p"/categories/#{category}/edit"}>Edit</.link>
+    <.link patch={~p"/board_admin/categories/#{category}/edit"}>Edit</.link>
   </:action>
   <:action :let={{id, category}}>
     <.link
@@ -30,13 +31,13 @@
   </:action>
 </.table>
 
-<.modal :if={@live_action in [:new, :edit]} id="category-modal" show on_cancel={JS.patch(~p"/categories")}>
+<.modal :if={@live_action in [:new, :edit]} id="category-modal" show on_cancel={JS.patch(~p"/board_admin/categories")}>
   <.live_component
     module={ApolloWeb.CategoryLive.FormComponent}
     id={@category.id || :new}
     title={@page_title}
     action={@live_action}
     category={@category}
-    patch={~p"/categories"}
+    patch={~p"/board_admin/categories"}
   />
 </.modal>

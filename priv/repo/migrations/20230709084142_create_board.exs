@@ -4,6 +4,7 @@ defmodule Apollo.Repo.Migrations.CreateBoard do
   def change do
     create table(:categories) do
       add :name, :string
+      add :visible, :boolean
       add :ordering, :integer
 
       timestamps()

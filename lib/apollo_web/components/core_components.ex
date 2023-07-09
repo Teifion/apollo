@@ -28,7 +28,7 @@ defmodule ApolloWeb.CoreComponents do
   JS commands may be passed to the `:on_cancel` and `on_confirm` attributes
   for the caller to react to each button press, for example:
 
-      <.modal id="confirm" on_confirm={JS.push("delete")} on_cancel={JS.navigate(~p"/posts")}>
+      <.modal id="confirm" on_confirm={JS.push("delete")} on_cancel={JS.navigate(~p"/board_admin/posts")}>
         Are you sure you?
         <:confirm>OK</:confirm>
         <:cancel>Cancel</:cancel>
@@ -558,7 +558,7 @@ defmodule ApolloWeb.CoreComponents do
 
   ## Examples
 
-      <.back navigate={~p"/posts"}>Back to posts</.back>
+      <.back navigate={~p"/board_admin/posts"}>Back to posts</.back>
   """
   attr :navigate, :any, required: true
   slot :inner_block, required: true

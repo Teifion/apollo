@@ -20,7 +20,8 @@ defmodule ApolloWeb.CategoryLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:name]} type="text" label="Name" />
-        <.input field={@form[:ordering]} type="number" label="Ordering" />
+        <.input field={@form[:visible]} type="checkbox" label="Visible" />
+        <.input field={@form[:ordering]} type="hidden" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Category</.button>
         </:actions>

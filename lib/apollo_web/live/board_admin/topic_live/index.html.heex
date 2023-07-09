@@ -1,7 +1,7 @@
 <.header>
   Listing Topics
   <:actions>
-    <.link patch={~p"/topics/new"}>
+    <.link patch={~p"/board_admin/topics/new"}>
       <.button>New Topic</.button>
     </.link>
   </:actions>
@@ -10,16 +10,16 @@
 <.table
   id="topics"
   rows={@streams.topics}
-  row_click={fn {_id, topic} -> JS.navigate(~p"/topics/#{topic}") end}
+  row_click={fn {_id, topic} -> JS.navigate(~p"/board_admin/topics/#{topic}") end}
 >
   <:col :let={{_id, topic}} label="Title"><%= topic.title %></:col>
   <:col :let={{_id, topic}} label="Last post time"><%= topic.last_post_time %></:col>
   <:col :let={{_id, topic}} label="Post count"><%= topic.post_count %></:col>
   <:action :let={{_id, topic}}>
     <div class="sr-only">
-      <.link navigate={~p"/topics/#{topic}"}>Show</.link>
+      <.link navigate={~p"/board_admin/topics/#{topic}"}>Show</.link>
     </div>
-    <.link patch={~p"/topics/#{topic}/edit"}>Edit</.link>
+    <.link patch={~p"/board_admin/topics/#{topic}/edit"}>Edit</.link>
   </:action>
   <:action :let={{id, topic}}>
     <.link
@@ -31,13 +31,13 @@
   </:action>
 </.table>
 
-<.modal :if={@live_action in [:new, :edit]} id="topic-modal" show on_cancel={JS.patch(~p"/topics")}>
+<.modal :if={@live_action in [:new, :edit]} id="topic-modal" show on_cancel={JS.patch(~p"/board_admin/topics")}>
   <.live_component
     module={ApolloWeb.TopicLive.FormComponent}
     id={@topic.id || :new}
     title={@page_title}
     action={@live_action}
     topic={@topic}
-    patch={~p"/topics"}
+    patch={~p"/board_admin/topics"}
   />
 </.modal>

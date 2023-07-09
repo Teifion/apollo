@@ -2,7 +2,7 @@
   Forum <%= @forum.id %>
   <:subtitle>This is a forum record from your database.</:subtitle>
   <:actions>
-    <.link patch={~p"/forums/#{@forum}/show/edit"} phx-click={JS.push_focus()}>
+    <.link patch={~p"/board_admin/forums/#{@forum}/show/edit"} phx-click={JS.push_focus()}>
       <.button>Edit forum</.button>
     </.link>
   </:actions>
@@ -14,15 +14,15 @@
   <:item title="Ordering"><%= @forum.ordering %></:item>
 </.list>
 
-<.back navigate={~p"/forums"}>Back to forums</.back>
+<.back navigate={~p"/board_admin/forums"}>Back to forums</.back>
 
-<.modal :if={@live_action == :edit} id="forum-modal" show on_cancel={JS.patch(~p"/forums/#{@forum}")}>
+<.modal :if={@live_action == :edit} id="forum-modal" show on_cancel={JS.patch(~p"/board_admin/forums/#{@forum}")}>
   <.live_component
     module={ApolloWeb.ForumLive.FormComponent}
     id={@forum.id}
     title={@page_title}
     action={@live_action}
     forum={@forum}
-    patch={~p"/forums/#{@forum}"}
+    patch={~p"/board_admin/forums/#{@forum}"}
   />
 </.modal>

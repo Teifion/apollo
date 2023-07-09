@@ -70,6 +70,51 @@ defmodule ApolloWeb.Router do
     end
   end
 
+  scope "/board", ApolloWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live_session :board_view do
+      live "/", BoardIndexLive, :edit
+    end
+  end
+
+  scope "/board_admin", ApolloWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live "/", BoardAdmin.IndexLive, :index
+
+    live "/categories", CategoryLive.Index, :index
+    live "/categories/new", CategoryLive.Index, :new
+    live "/categories/:id/edit", CategoryLive.Index, :edit
+
+    live "/categories/:id", CategoryLive.Show, :show
+    live "/categories/:id/show/edit", CategoryLive.Show, :edit
+
+
+    live "/forums", ForumLive.Index, :index
+    live "/forums/new", ForumLive.Index, :new
+    live "/forums/:id/edit", ForumLive.Index, :edit
+
+    live "/forums/:id", ForumLive.Show, :show
+    live "/forums/:id/show/edit", ForumLive.Show, :edit
+
+
+    live "/topics", TopicLive.Index, :index
+    live "/topics/new", TopicLive.Index, :new
+    live "/topics/:id/edit", TopicLive.Index, :edit
+
+    live "/topics/:id", TopicLive.Show, :show
+    live "/topics/:id/show/edit", TopicLive.Show, :edit
+
+
+    live "/posts", PostLive.Index, :index
+    live "/posts/new", PostLive.Index, :new
+    live "/posts/:id/edit", PostLive.Index, :edit
+
+    live "/posts/:id", PostLive.Show, :show
+    live "/posts/:id/show/edit", PostLive.Show, :edit
+  end
+
   scope "/", ApolloWeb do
     pipe_through [:browser]
 

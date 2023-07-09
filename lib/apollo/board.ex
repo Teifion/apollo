@@ -102,6 +102,9 @@ defmodule Apollo.Board do
     Category.changeset(category, attrs)
   end
 
+  @spec get_next_ordering_value() :: non_neg_integer()
+  defdelegate get_next_ordering_value(), to: Apollo.Board.CategoryLib
+
   alias Apollo.Board.Forum
 
   @doc """
