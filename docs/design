@@ -1,0 +1,27 @@
+Bulliten board stuff
+
+  First brainstorm of what's needed
+ACL stuff (groups, options, roles, roles_data, users)
+Admin (config, config_text, disallow_usernames, logs)
+Moderation (banlist, reports, report_reasons, warnings, censored_words)
+User (bookmarks, dm_drafts, groups, login_attempts, notifications, profile_fields, profile_fields_data, users_group, user_notifactions, users)
+Others? (bbcodes, bots, ranks)
+Forums (forums, forums_access, forums_track, forums_watch, moderators, topics, topics_posted, topics_track, topics_watch)
+Posts (attachments, icons, poll_options, poll_votes, posts)
+DMs (privmsgs, privmsgs_folder, privmsgs_to)
+Search (search_results, search_wordlist)
+
+MVP
+Categories -> Forums -> Topics -> Posts
+
+
+Board
+  Categories
+    Forums
+      Topics
+        Posts
+
+mix phx.gen.live Board Category categories name:string ordering:integer
+mix phx.gen.live Board Forum forums name:string description:text ordering:integer category_id:references:categories
+mix phx.gen.live Board Topic topics title:string forum_id:references:forums creator_id:references:users last_poster_id:references:users last_post_time:naive_datetime post_count:integer
+mix phx.gen.live Board Post posts content:text topic_id:references:topics forum_id:references:forums poster_id:references:users subject:string
