@@ -21,7 +21,6 @@ defmodule ApolloWeb.CategoryLive.FormComponent do
       >
         <.input field={@form[:name]} type="text" label="Name" />
         <.input field={@form[:visible]} type="checkbox" label="Visible" />
-        <.input field={@form[:ordering]} type="hidden" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Category</.button>
         </:actions>
@@ -70,6 +69,11 @@ defmodule ApolloWeb.CategoryLive.FormComponent do
   end
 
   defp save_category(socket, :new, category_params) do
+    next_ordering = Board.get_next_category_ordering_value()
+    category_params = Map.merge(category_params, %{
+      "ordering" => next_ordering
+    })
+
     case Board.create_category(category_params) do
       {:ok, category} ->
         notify_parent({:saved, category})

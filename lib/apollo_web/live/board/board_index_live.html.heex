@@ -20,7 +20,7 @@
   <:col :let={{_id, category}} label="Name"><%= category.name %></:col>
   <:col :let={{_id, category}} label="Ordering"><%= category.ordering %></:col>
   <:action :let={{_id, category}}>
-    <div class="visually-hidden">
+    <div class="sr-only">
       <.link navigate={~p"/board_admin/categories/#{category}"}>Show</.link>
     </div>
     <.link patch={~p"/board_admin/categories/#{category}/edit"}>Edit</.link>

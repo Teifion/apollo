@@ -20,8 +20,8 @@ defmodule ApolloWeb.ForumLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:name]} type="text" label="Name" />
+        <.input field={@form[:category_id]} type="select" label="Category" options={@categories} />
         <.input field={@form[:description]} type="text" label="Description" />
-        <.input field={@form[:ordering]} type="number" label="Ordering" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Forum</.button>
         </:actions>
@@ -32,10 +32,24 @@ defmodule ApolloWeb.ForumLive.FormComponent do
 
   @impl true
   def update(%{forum: forum} = assigns, socket) do
+    categories = Board.list_categories(
+      where: [
+        visible: true
+      ],
+      order_by: [
+        "Name (A-Z)"
+      ],
+      select: [:id, :name]
+    )
+    |> Enum.map(fn %{id: id, name: name} ->
+      {name, id}
+    end)
+
     changeset = Board.change_forum(forum)
 
     {:ok,
      socket
+     |> assign(:categories, categories)
      |> assign(assigns)
      |> assign_form(changeset)}
   end
@@ -70,6 +84,11 @@ defmodule ApolloWeb.ForumLive.FormComponent do
   end
 
   defp save_forum(socket, :new, forum_params) do
+    next_ordering = Board.get_next_forum_ordering_value(forum_params["category_id"])
+    forum_params = Map.merge(forum_params, %{
+      "ordering" => next_ordering
+    })
+
     case Board.create_forum(forum_params) do
       {:ok, forum} ->
         notify_parent({:saved, forum})

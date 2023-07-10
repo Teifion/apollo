@@ -21,13 +21,9 @@ defmodule ApolloWeb.CategoryLive.Index do
   end
 
   defp apply_action(socket, :new, _params) do
-    next_ordering = Board.get_next_ordering_value()
-
     socket
     |> assign(:page_title, "New Category")
-    |> assign(:category, %Category{
-      ordering: next_ordering
-    })
+    |> assign(:category, %Category{})
   end
 
   defp apply_action(socket, :index, _params) do

@@ -6,7 +6,7 @@ defmodule Apollo.Board do
   import Ecto.Query, warn: false
   alias Apollo.Repo
 
-  alias Apollo.Board.Category
+  alias Apollo.Board.{Category, CategoryLib}
 
   @doc """
   Returns the list of categories.
@@ -17,8 +17,11 @@ defmodule Apollo.Board do
       [%Category{}, ...]
 
   """
-  def list_categories do
-    Repo.all(Category)
+  @spec list_categories(list) :: list
+  def list_categories(args \\ []) do
+    args
+    |> CategoryLib.query_categories()
+    |> Repo.all()
   end
 
   @doc """
@@ -102,10 +105,10 @@ defmodule Apollo.Board do
     Category.changeset(category, attrs)
   end
 
-  @spec get_next_ordering_value() :: non_neg_integer()
-  defdelegate get_next_ordering_value(), to: Apollo.Board.CategoryLib
+  @spec get_next_category_ordering_value() :: non_neg_integer()
+  defdelegate get_next_category_ordering_value(), to: CategoryLib
 
-  alias Apollo.Board.Forum
+  alias Apollo.Board.{Forum, ForumLib}
 
   @doc """
   Returns the list of forums.
@@ -200,6 +203,9 @@ defmodule Apollo.Board do
   def change_forum(%Forum{} = forum, attrs \\ %{}) do
     Forum.changeset(forum, attrs)
   end
+
+  @spec get_next_forum_ordering_value(non_neg_integer()) :: non_neg_integer()
+  defdelegate get_next_forum_ordering_value(category_id), to: ForumLib
 
   alias Apollo.Board.Topic
 
@@ -391,5 +397,18 @@ defmodule Apollo.Board do
   """
   def change_post(%Post{} = post, attrs \\ %{}) do
     Post.changeset(post, attrs)
+  end
+
+  # Custom stuff
+  def board_index_query() do
+    Repo.all(
+      from forums in Forum,
+        join: categories in assoc(forums, :category),
+        join: topics in assoc(forums, :most_recent_topic),
+        order_by: [desc: categories.ordering],
+        select: [:ordering],
+        preload: [category: categories],
+        limit: 1
+    )
   end
 end

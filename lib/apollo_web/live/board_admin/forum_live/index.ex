@@ -21,7 +21,10 @@ defmodule ApolloWeb.ForumLive.Index do
   end
 
   defp apply_action(socket, :new, _params) do
+    categories = Board.list_categories()
+
     socket
+    |> assign(:categories, categories)
     |> assign(:page_title, "New Forum")
     |> assign(:forum, %Forum{})
   end

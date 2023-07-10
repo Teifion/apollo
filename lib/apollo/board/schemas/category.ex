@@ -14,6 +14,6 @@ defmodule Apollo.Board.Category do
   def changeset(category, attrs) do
     category
     |> cast(attrs, ~w(name visible ordering)a)
-    |> validate_required(~w(name visible ordering)a)
+    |> validate_required(~w(name visible)a)
   end
 end

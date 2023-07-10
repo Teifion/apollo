@@ -6,7 +6,9 @@ defmodule Apollo.Board.Forum do
     field :description, :string
     field :name, :string
     field :ordering, :integer
-    field :category_id, :id
+
+    belongs_to :category, Apollo.Board.Category
+    belongs_to :most_recent_topic, Apollo.Board.Topic
 
     timestamps()
   end
@@ -14,7 +16,7 @@ defmodule Apollo.Board.Forum do
   @doc false
   def changeset(forum, attrs) do
     forum
-    |> cast(attrs, [:name, :description, :ordering])
-    |> validate_required([:name, :description, :ordering])
+    |> cast(attrs, ~w(name description ordering category_id most_recent_topic_id)a)
+    |> validate_required(~w(name description ordering category_id)a)
   end
 end

@@ -49,5 +49,9 @@ defmodule Apollo.Repo.Migrations.CreateBoard do
     create index(:posts, [:topic_id])
     create index(:posts, [:forum_id])
     create index(:posts, [:poster_id])
+
+    alter table(:forums) do
+      add :most_recent_topic_id, references(:topics, on_delete: :nothing)
+    end
   end
 end
