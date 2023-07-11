@@ -2,20 +2,36 @@ defmodule ApolloWeb.BoardLive.Topic do
   use ApolloWeb, :live_view
 
   alias Apollo.Board
+  alias Phoenix.PubSub
 
   @impl true
-  def mount(_params, _session, socket) do
-    {categories, forums} = Board.board_index_query()
+  def mount(%{"topic_id" => topic_id}, _session, socket) do
+    topic = Board.get_topic!(topic_id)
+    posts = Board.list_posts(
+      where: [
+        topic_id: topic_id
+      ],
+      preload: [
+        :poster
+      ],
+      order_by: [
+        "Newest first"
+      ],
+      limit: 25
+    )
+    |> Enum.reverse
+
+    PubSub.subscribe(Apollo.PubSub, "topic_posts:#{topic_id}")
 
     socket = socket
-      |> stream(:categories, categories)
-      |> stream(:forums, forums)
+      |> assign(:topic, topic)
+      |> stream(:posts, posts)
 
     {:ok, socket}
   end
 
   @impl true
-  def handle_params(params, _url, socket) do
+  def handle_params(_params, _url, socket) do
     # {:noreply, apply_action(socket, socket.assigns.live_action, params)}
     {:noreply, socket}
   end
@@ -38,10 +54,14 @@ defmodule ApolloWeb.BoardLive.Topic do
   #   |> assign(:category, nil)
   # end
 
-  # @impl true
-  # def handle_info({ApolloWeb.CategoryLive.FormComponent, {:saved, category}}, socket) do
-  #   {:noreply, stream_insert(socket, :categories, category)}
-  # end
+  @impl true
+  def handle_info({ApolloWeb.PostLive.FormComponent, {:new_post, _post}}, socket) do
+    {:noreply, socket}
+  end
+
+  def handle_info(%{channel: :topic_posts, event: :new_post} = msg, socket) do
+    {:noreply, stream_insert(socket, :posts, msg.post)}
+  end
 
   # @impl true
   # def handle_event("delete", %{"id" => id}, socket) do

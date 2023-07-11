@@ -2,16 +2,12 @@ defmodule ApolloWeb.PostLive.FormComponent do
   use ApolloWeb, :live_component
 
   alias Apollo.Board
+  alias Phoenix.PubSub
 
   @impl true
   def render(assigns) do
     ~H"""
     <div>
-      <.header>
-        <%= @title %>
-        <:subtitle>Use this form to manage post records in your database.</:subtitle>
-      </.header>
-
       <.simple_form
         for={@form}
         id="post-form"
@@ -19,8 +15,7 @@ defmodule ApolloWeb.PostLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:content]} type="text" label="Content" />
-        <.input field={@form[:subject]} type="text" label="Subject" />
+        <.input field={@form[:content]} type="textarea" label="Content" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Post</.button>
         </:actions>
@@ -69,14 +64,42 @@ defmodule ApolloWeb.PostLive.FormComponent do
   end
 
   defp save_post(socket, :new, post_params) do
+    post_params = Map.merge(post_params, %{
+      "forum_id" => socket.assigns.forum_id,
+      "topic_id" => socket.assigns.topic_id,
+      "poster_id" => socket.assigns.poster_id
+    })
+
     case Board.create_post(post_params) do
       {:ok, post} ->
-        notify_parent({:saved, post})
+        post.topic_id
+        |> Board.get_topic!()
+        |> Board.update_topic(%{
+          last_poster: post.poster_id,
+          most_recent_post_id: post.id,
+          last_post_time: post.inserted_at
+        })
+
+        notify_parent({:new_post, post})
+
+        blank_changeset = Board.change_post(%Board.Post{})
+
+        preloaded_post = Board.get_post!(post.id, preload: [:poster])
+
+        PubSub.broadcast(
+          Apollo.PubSub,
+          "topic_posts:#{post.topic_id}",
+          %{
+            channel: :topic_posts,
+            event: :new_post,
+            post: preloaded_post
+          }
+        )
 
         {:noreply,
          socket
          |> put_flash(:info, "Post created successfully")
-         |> push_patch(to: socket.assigns.patch)}
+         |> assign_form(blank_changeset)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}

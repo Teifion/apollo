@@ -15,7 +15,11 @@ defmodule ApolloWeb.BoardLive.Forum do
       preload: [
         :most_recent_post,
         :last_poster
-      ]
+      ],
+      order_by: [
+        "Newest first"
+      ],
+      limit: 25
     )
 
     socket = socket

@@ -81,7 +81,16 @@ defmodule Apollo.Board.PostLib do
   @spec do_preload(Ecto.Query.t(), List.t() | nil) :: Ecto.Query.t()
   defp do_preload(query, nil), do: query
 
-  defp do_preload(query, _preloads) do
-    query
+  defp do_preload(query, preloads) do
+    preloads
+    |> Enum.reduce(query, fn key, query_acc ->
+      _preload(query_acc, key)
+    end)
+  end
+
+  defp _preload(query, :poster) do
+    from topics in query,
+      left_join: users in assoc(topics, :poster),
+      preload: [poster: users]
   end
 end

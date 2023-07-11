@@ -347,6 +347,14 @@ defmodule Apollo.Board do
   """
   def get_post!(id), do: Repo.get!(Post, id)
 
+  def get_post!(id, args) do
+    args = args ++ [id: id]
+
+    args
+    |> PostLib.query_posts()
+    |> Repo.one!()
+  end
+
   @doc """
   Creates a post.
 

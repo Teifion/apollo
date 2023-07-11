@@ -1,17 +1,26 @@
-<div
-  :for={{_id, category} <- @streams.categories}
-  id={"category-#{category.id}"}
+<.header>
+  <:actions>
+    <.link patch={~p"/board/forum/#{@topic.forum_id}"}>
+      <.button>Back to Forum</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.post_list
+  id="posts-row-#{@topic.id}"
+  rows={@streams.posts}
 >
-  <h3><%= category.name %></h3>
-  <.forum_list
-    id="forums-row-#{category.id}"
-    rows={@streams.forums}
-    filter_key={:category_id}
-    filter_value={category.id}
-    row_click={fn {_id, forum} -> JS.navigate(~p"/board/forum/#{forum.id}") end}
-  >
-    <:col :let={{_id, forum}} label="Name"><%= forum.name %></:col>
-    <:col :let={{_id, forum}} label="Name"><%= forum.description %></:col>
-  </.forum_list>
-  <br /><br />
-</div>
+  <:col :let={{_id, post}} label="Name"><%= post.poster.email %></:col>
+  <:col :let={{_id, post}} label="Content"><%= post.content %></:col>
+</.post_list>
+
+<.live_component
+  module={ApolloWeb.PostLive.FormComponent}
+  id={:new}
+  action={:new}
+  post={%Apollo.Board.Post{}}
+  patch={~p"/board/topic/#{@topic.id}"}
+  topic_id={@topic.id}
+  forum_id={@topic.forum_id}
+  poster_id={@current_user.id}
+/>
