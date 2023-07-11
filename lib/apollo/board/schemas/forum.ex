@@ -17,6 +17,6 @@ defmodule Apollo.Board.Forum do
   def changeset(forum, attrs) do
     forum
     |> cast(attrs, ~w(name description ordering category_id most_recent_topic_id)a)
-    |> validate_required(~w(name description ordering category_id)a)
+    |> validate_required(~w(name ordering category_id)a)
   end
 end

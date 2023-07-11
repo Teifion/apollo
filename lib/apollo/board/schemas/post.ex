@@ -4,10 +4,10 @@ defmodule Apollo.Board.Post do
 
   schema "posts" do
     field :content, :string
-    field :subject, :string
-    field :topic_id, :id
-    field :forum_id, :id
-    field :poster_id, :id
+
+    belongs_to :topic, Apollo.Board.Topic
+    belongs_to :forum, Apollo.Board.Forum
+    belongs_to :poster, Apollo.Accounts.User
 
     timestamps()
   end
@@ -15,7 +15,7 @@ defmodule Apollo.Board.Post do
   @doc false
   def changeset(post, attrs) do
     post
-    |> cast(attrs, [:content, :subject])
-    |> validate_required([:content, :subject])
+    |> cast(attrs, [:content, :topic_id, :forum_id, :poster_id])
+    |> validate_required([:content, :topic_id, :forum_id, :poster_id])
   end
 end

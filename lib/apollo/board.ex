@@ -119,8 +119,11 @@ defmodule Apollo.Board do
       [%Forum{}, ...]
 
   """
-  def list_forums do
-    Repo.all(Forum)
+  @spec list_forums(list) :: list
+  def list_forums(args \\ []) do
+    args
+    |> ForumLib.query_forums()
+    |> Repo.all()
   end
 
   @doc """
@@ -207,7 +210,7 @@ defmodule Apollo.Board do
   @spec get_next_forum_ordering_value(non_neg_integer()) :: non_neg_integer()
   defdelegate get_next_forum_ordering_value(category_id), to: ForumLib
 
-  alias Apollo.Board.Topic
+  alias Apollo.Board.{Topic, TopicLib}
 
   @doc """
   Returns the list of topics.
@@ -218,8 +221,11 @@ defmodule Apollo.Board do
       [%Topic{}, ...]
 
   """
-  def list_topics do
-    Repo.all(Topic)
+  @spec list_topics(list) :: list
+  def list_topics(args \\ []) do
+    args
+    |> TopicLib.query_topics()
+    |> Repo.all()
   end
 
   @doc """
@@ -252,7 +258,7 @@ defmodule Apollo.Board do
   """
   def create_topic(attrs \\ %{}) do
     %Topic{}
-    |> Topic.changeset(attrs)
+    |> Topic.changeset_with_post(attrs)
     |> Repo.insert()
   end
 
@@ -303,7 +309,11 @@ defmodule Apollo.Board do
     Topic.changeset(topic, attrs)
   end
 
-  alias Apollo.Board.Post
+  def change_topic_with_post(%Topic{} = topic, attrs \\ %{}) do
+    Topic.changeset_with_post(topic, attrs)
+  end
+
+  alias Apollo.Board.{Post, PostLib}
 
   @doc """
   Returns the list of posts.
@@ -314,8 +324,11 @@ defmodule Apollo.Board do
       [%Post{}, ...]
 
   """
-  def list_posts do
-    Repo.all(Post)
+  @spec list_posts(list) :: list
+  def list_posts(args \\ []) do
+    args
+    |> PostLib.query_posts()
+    |> Repo.all()
   end
 
   @doc """
@@ -401,14 +414,26 @@ defmodule Apollo.Board do
 
   # Custom stuff
   def board_index_query() do
-    Repo.all(
-      from forums in Forum,
-        join: categories in assoc(forums, :category),
-        join: topics in assoc(forums, :most_recent_topic),
-        order_by: [desc: categories.ordering],
-        select: [:ordering],
-        preload: [category: categories],
-        limit: 1
+    category_list = list_categories(
+      where: [
+        visible: true,
+      ],
+      order_by: [
+        "Ordering (Low-High)"
+      ]
     )
+
+    category_ids = category_list
+    |> Enum.map(fn c -> c.id end)
+
+    forum_list = Repo.all(
+      from forums in Forum,
+        left_join: topics in assoc(forums, :most_recent_topic),
+        left_join: posts in assoc(topics, :most_recent_post),
+        where: forums.category_id in ^category_ids,
+        order_by: [asc: forums.ordering]
+    )
+
+    {category_list, forum_list}
   end
 end

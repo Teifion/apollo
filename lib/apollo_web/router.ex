@@ -73,8 +73,12 @@ defmodule ApolloWeb.Router do
   scope "/board", ApolloWeb do
     pipe_through [:browser, :require_authenticated_user]
 
-    live_session :board_view do
-      live "/", BoardIndexLive, :edit
+    live_session :board_view,
+      on_mount: [{ApolloWeb.UserAuth, :ensure_authenticated}] do
+      live "/", BoardLive.Index, :index
+      live "/forum/:forum_id/new_topic", BoardLive.Forum, :new_topic
+      live "/forum/:forum_id", BoardLive.Forum, :index
+      live "/topic/:topic_id", BoardLive.Topic, :index
     end
   end
 

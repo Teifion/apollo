@@ -1,4 +1,4 @@
-defmodule ApolloWeb.BoardLive.Index do
+defmodule ApolloWeb.BoardLive.Topic do
   use ApolloWeb, :live_view
 
   alias Apollo.Board

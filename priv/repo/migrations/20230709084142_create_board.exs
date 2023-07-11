@@ -53,5 +53,9 @@ defmodule Apollo.Repo.Migrations.CreateBoard do
     alter table(:forums) do
       add :most_recent_topic_id, references(:topics, on_delete: :nothing)
     end
+
+    alter table(:topics) do
+      add :most_recent_post_id, references(:posts, on_delete: :nothing)
+    end
   end
 end

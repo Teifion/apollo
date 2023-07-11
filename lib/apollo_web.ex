@@ -84,7 +84,7 @@ defmodule ApolloWeb do
       # HTML escaping functionality
       import Phoenix.HTML
       # Core UI components and translation
-      import ApolloWeb.CoreComponents
+      import ApolloWeb.{CoreComponents, BoardComponents}
       import ApolloWeb.Gettext
 
       # Shortcut for generating JS commands
